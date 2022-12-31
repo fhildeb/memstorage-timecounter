@@ -46,7 +46,7 @@ start:             ;initialisierung
 ;-------------
 hintergrund:       cli			;interrupts sperren
 
-;***** programm                         ; schalter einlesen und auswerten
+;***** programm                         ;schalter einlesen und auswerten
 
 start_prog:        mov al,[stat]
                    cmp al,0             ;bei abgelaufener zeit in schleife halten
@@ -62,7 +62,7 @@ durchlauf:         in al,0              ;schalterstellung einlesen
 
                    and al,01111111b
                    daa                  ;in bcd-zahl umwandeln
-                   mov dx,timeseg           ;auf linker displaystelle anzeigen lassen
+                   mov dx,timeseg       ;auf linker displaystelle anzeigen lassen
                    call show2
                    mov dx,9eh
                    mov al,ah            ;fuehrende null anzeigen
@@ -96,16 +96,16 @@ startcounter:      push ax
 
 ;interruptserviceroutine
 ;-----------------------
-isr8:   push ax             ;register retten
+isr8:   push ax                         ;register retten
 
 ;***** isr-programm
-        call zaehler        ; zeit (eine einheit weiter)
-        call anzeige        ; anzeige auf display
+        call zaehler                    ;zeit (eine einheit weiter)
+        call anzeige                    ;anzeige auf display
 
 isrret: mov al,20h
-        out 0c0h,al         ;pic wieder freigeben
+        out 0c0h,al                     ;pic wieder freigeben
 
-        pop ax              ;register wiederherstellen
+        pop ax                          ;register wiederherstellen
         iret
 
 
@@ -118,7 +118,7 @@ zaehler:           push ax
                    dec al               ;und dekrementieren
                    das
 
-                   cmp al,99h            ;wenn bei kleiner 0 angekommen
+                   cmp al,99h           ;wenn bei kleiner 0 angekommen
                    jne husesichern
 
                    call sekundencounter ;bei 0 die sekunden aendern
@@ -160,22 +160,22 @@ anzeige:           push ax
 
                    push cx
 
-                   mov dx,counterseg          ;an 4. stelle ein minus anzeigen
+                   mov dx,counterseg    ;an 4. stelle ein minus anzeigen
                    mov al,trennseg
                    out dx,al
 
-                   mov al,[seku]       ;nach dem minus die sekunden anzigen
+                   mov al,[seku]        ;nach dem minus die sekunden anzigen
                    mov dx,sekundenseg
                    mov cl,0ffh
                    call show2
 
                    mov cx,0
-                   mov al,ah           ;fuehrende null anzeigen
+                   mov al,ah            ;fuehrende null anzeigen
                    mov dx,timerseg
                    call show1
 
-                   mov al,[husk]       ;nach den sekunden die hundertstel-sekunden zeigen
-                   shr al,1            ;nur erste stelle (zehntel-sek.) anzeigen
+                   mov al,[husk]        ;nach den sekunden die hundertstel-sekunden zeigen
+                   shr al,1             ;nur erste stelle (zehntel-sek.) anzeigen
                    shr al,1
                    shr al,1
                    shr al,1
@@ -192,7 +192,7 @@ anzeige:           push ax
 ;interruptcontroller initialisieren
 ;-------------------------------
 picinit: push ax
-         in al,0c2h       ;lesen des int.-maskenregisters des pic
+         in al,0c2h                     ;lesen des int.-maskenregisters des pic
          and al,11111110b
          out 0c2h,al
          pop ax
@@ -204,11 +204,11 @@ picinit: push ax
 
 pitinit: push ax
          mov al,isrmodus
-         out 0a6h,al      ;timer programmieren
+         out 0a6h,al                    ;timer programmieren
          mov ax,millisekunden
-         out 0a2h,al      ;low-teil der zeitkonstante laden
+         out 0a2h,al                    ;low-teil der zeitkonstante laden
          mov al,ah
-         out 0a2h,al      ;hi-teil der zeitkonstante laden
+         out 0a2h,al                    ;hi-teil der zeitkonstante laden
          pop ax
          ret
 
@@ -217,72 +217,72 @@ pitinit: push ax
 ivtabinit:
 ;adresse der isr in der interrupt-vektor-tabelle
 ;auf vektor 8 eintragen
-	mov ax,isr8	;adresse isr in vektortabelle eintragen
+	mov ax,isr8	                ;adresse isr in vektortabelle eintragen
 	mov [0020h],ax
 	mov ax,0
-	mov [0020h+2],ax  ;segmentadresse eintragen
+	mov [0020h+2],ax                ;segmentadresse eintragen
         ret
 
 
 ;unterprogramm fuer 2-stellige hexzahlausgabe
 ;parameter: al - anzuzeigende 8-bit-zahl, dx - nummer der 7-segment-anzeige, cl - option zum anzeigen eines punkts; rueckgabewerte: keine
 ;-------------------------------
-show2:          push ax            ;registerinhalte retten
+show2:          push ax                 ;registerinhalte retten
                 push dx
                 push bx
 
                 push cx
 
                 mov cx,0
-                mov bl,al          ;wert von al in bl kopieren
-                and bl,0fh         ;in bl letzte 4 bit bearbeiten
-                and al,0f0h        ;in al vordere 4 bit bearbeiten
+                mov bl,al               ;wert von al in bl kopieren
+                and bl,0fh              ;in bl letzte 4 bit bearbeiten
+                and al,0f0h             ;in al vordere 4 bit bearbeiten
 
-                ror al,1           ;al rotieren, bis wert in letzten 4 bit
+                ror al,1                ;al rotieren, bis wert in letzten 4 bit
                 ror al,1
                 ror al,1
                 ror al,1
-                call show1        ;fuer anzeige up aufrufen
+                call show1              ;fuer anzeige up aufrufen
 
                 pop cx
-                mov al,bl          ;zweite stelle bearbeiten
-                dec dx             ;anzeigestelle um 2 vermindern
+                mov al,bl               ;zweite stelle bearbeiten
+                dec dx                  ;anzeigestelle um 2 vermindern
                 dec dx
 
-                call show1        ;fuer weitere anzeige up aufrufen
+                call show1              ;fuer weitere anzeige up aufrufen
 
-                pop bx             ;urspruengliche werte wiederherstellen
+                pop bx                  ;urspruengliche werte wiederherstellen
                 pop dx
                 pop ax
-                ret                ;zum hauptprogramm springen
+                ret                     ;zum hauptprogramm springen
 
 ;unterprogramm fuer 1-stellige hexzahlausgabe
 ;parameter: al - anzuzeigende 4-bit-zahl in 3-0, dx - nummer der 7-segment-anzeige, cl - option zum anzeigen eines punktes; rueckgabewerte: keine
 ;-------------------------------
-show1:          push ax            ;registerinhalte retten
+show1:          push ax                 ;registerinhalte retten
                 push dx
                 push si
 
-                and ax,0fh         ;nur letzte 4 bit fuer anzeige erlauben (keine bereichsueberschreitung der codetabelle)
-                mov si,codetab     ;startadresse uebernehmen
-                add si,ax          ;mit ziffer addieren
-                mov al,[si]        ;passende anzeigestellung laden
+                and ax,0fh              ;nur letzte 4 bit fuer anzeige erlauben (keine bereichsueberschreitung der codetabelle)
+                mov si,codetab          ;startadresse uebernehmen
+                add si,ax               ;mit ziffer addieren
+                mov al,[si]             ;passende anzeigestellung laden
 
-                cmp cl,0ffh        ;bei bedarf einen punkt anzeigen
+                cmp cl,0ffh             ;bei bedarf einen punkt anzeigen
                 jne a1sanzeige
                 or al,80h
-a1sanzeige:     out dx,al          ;anzeige auf passender 7-segment-anzeige
+a1sanzeige:     out dx,al               ;anzeige auf passender 7-segment-anzeige
 
-                pop si             ;wiederherstellen der registerinhalte
+                pop si                  ;wiederherstellen der registerinhalte
                 pop dx
                 pop ax
-                ret                ;sprung zum hauptprogramm
+                ret                     ;sprung zum hauptprogramm
 
 ;unterprogramm zum loeschen aller 7-segment-anzeigen
 ;parameter: keine; rueckgabewerte: keine
 ;-------------------------------
 clrdsp:         push ax
-                push dx            ;anzeige loeschen
+                push dx                 ;anzeige loeschen
 startclr:       mov al,0
                 mov dx,90h
 clrdisplay:     out dx,al

@@ -4,10 +4,10 @@
                    org 100h
 
 ;Benoetigte Displayanzeigen:
-valueseg:          equ 9eh		;Portnummer der 7-Segment-Anzeige fuer die Ausgabe
+valueseg:          equ 9eh		        ;Portnummer der 7-Segment-Anzeige fuer die Ausgabe
                                         ;des WerteBereichs der Zeit samt Null
 
-counterseg:        equ 98h	        ;Portnummer der 7-Segment-Anzeige fuer die Ausgabe
+counterseg:        equ 98h	            ;Portnummer der 7-Segment-Anzeige fuer die Ausgabe
                                         ;der Haeufigkeit, des gesuchten Wertes
 
 firstseg:          equ 90h              ;Portnummer der 7-Segment-Anzeige fuer die erste
