@@ -2,7 +2,7 @@
 
 Memory evaluation and interruptless timers built by Felix Hildebrandt as final thesis for Assambly Development in 2018. The repository is split into two main programs running on an emulator.
 
-> **_NOTE:_** The commentary appears in German.
+> **_NOTE:_** Commentary appears in German.
 
 ## Picture
 
